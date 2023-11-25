@@ -1,0 +1,57 @@
+package kr.or.ddit.common.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import lombok.Data;
+
+@Data
+public class EmployeeVO {
+
+	private int empNo;
+	private String empNm;
+	private String empPw;
+	private int empRrno1;
+	private int empRrno2;
+	private String empTelno;
+	private String empZip;
+	private String empAdres1;
+	private String empAdres2;
+	private String empEmail;
+	private String empSexdstn;
+//	@DateTimeFormat(pattern = "yyyy-MM-dd")
+//	private Date empBrthdy;
+	private String empDep;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date empEncpn;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date empRetire;
+	private String empExp;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date empRgsde;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date empUpdde;
+	private String empHffcAt;
+	private String empProfile;
+	private String empSign;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date empLcns;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date empDoctrLcns;
+	private String empSe;
+	private String empAuthor;
+	private String empClsf;
+	private String empYrycUse;
+	private String empYrycRemndr;
+	private String empOffhodUse;
+	private String empOffhodRemndr;
+	private String empConfm;
+	private String RjctResn;
+	
+	
+	
+	
+	
+	
+}

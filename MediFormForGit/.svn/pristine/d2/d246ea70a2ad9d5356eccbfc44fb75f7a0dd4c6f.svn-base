@@ -1,0 +1,34 @@
+package kr.or.ddit.administration.service;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.administration.ServiceResult;
+import kr.or.ddit.common.vo.EmployeeVO;
+import kr.or.ddit.mapper.administration.EmployeeInsertMapper;
+
+@Service
+public class EmployeeServiceImpl implements IEmployeeService {
+
+	@Inject
+	private EmployeeInsertMapper employeeInsertMapper;
+	
+	
+	@Override
+	public ServiceResult employeeInsert(EmployeeVO employeeVO) {
+		
+		ServiceResult result = null;
+		
+		int status = employeeInsertMapper.employeeInsert(employeeVO);
+		
+		if(status > 0) {
+			result = ServiceResult.OK;
+		}else {
+			result = ServiceResult.FAILED;
+		}
+		return result;
+	}
+
+}

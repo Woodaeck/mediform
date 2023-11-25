@@ -1,0 +1,140 @@
+package kr.or.ddit.manager.service.impl;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.UUID;
+
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kr.or.ddit.administration.ServiceResult;
+import kr.or.ddit.common.vo.EmployeeVO;
+import kr.or.ddit.manager.service.IManagerService;
+import kr.or.ddit.mapper.manager.ManagerEmployeeMapper;
+
+@Service
+public class ManagerServiceImpl implements IManagerService{
+
+	@Inject
+	private ManagerEmployeeMapper managerMapper;
+	
+	// 자바 메일 sender 의존성 주입
+	@Inject
+	private JavaMailSender emailSender;
+	
+//	@Inject
+//	private PasswordEncoder pe;
+	
+	/**
+	 *  신청 내역 List
+	 */
+	@Override
+	public List<EmployeeVO> ApplicationList() {
+		return managerMapper.ApplicationList();
+	}
+
+	/**
+	 * 회원 상세 조회
+	 */
+	@Override
+	public EmployeeVO getEmployee(String empNo) {
+		return managerMapper.getEmployee(empNo);
+	}
+
+	/**
+	 * 반려 URL
+	 */
+	@Override
+	public ServiceResult rejectUpdate(EmployeeVO empVO) {
+		ServiceResult result = null;
+		int cnt  = managerMapper.rejectUpdate(empVO);
+		if(cnt > 0) {
+			result = ServiceResult.OK;
+		}else {
+			result = ServiceResult.FAILED;
+		}
+		return result;
+	}
+
+	/**
+	 * 승인 처리 URL
+	 * @throws MessagingException 
+	 */
+	@Transactional
+	@Override
+	public ServiceResult agreeEmployee(EmployeeVO empVO) throws MessagingException, UnsupportedEncodingException {
+		ServiceResult result = null;
+		UUID uuid = UUID.randomUUID();
+		// 랜덤 비밀번호
+		String rndPw = uuid.toString().replace("-", "").substring(0,10);
+		
+		// 인코딩한 비밀번호
+		// 시큐리티 적용 후 하겠음.
+//		String encPw = pe.encode(rndPw);
+		empVO.setEmpPw(rndPw);
+		
+		int cnt  = managerMapper.agreeEmployee(empVO);
+		if(cnt > 0) {
+			result = ServiceResult.OK;
+			
+//			MimeMessage message = sendMessage(empVO);
+//			emailSender.send(message);
+		}else {
+			result = ServiceResult.FAILED;
+		}
+		return result;
+	}
+	
+	public MimeMessage sendMessage(EmployeeVO empVO) throws MessagingException, UnsupportedEncodingException {
+		MimeMessage message = emailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+		
+		helper.setTo(empVO.getEmpEmail());	// 받는 사람 이메일
+		helper.setSubject("메디폼 재활병원 회원 신청 결과 안내");	// 메일 제목
+		
+		String emailContent = setContent(empVO);	// html식 메일 내용
+		
+		helper.setText(emailContent, true);	// 메일 내용
+		
+		helper.setFrom(new InternetAddress("nammj0419@gmail.com","메디폼재활병원"));	// 메일주소, 보내는 사람 이름
+		
+		return message;
+	}
+	
+	// html 형식의 문자열 생성 -> 메일 내용
+	public String setContent(EmployeeVO empVO) {
+		StringBuilder sb = new StringBuilder();
+		
+		String content = "";
+		content += "<html>";
+		content += "<head>";
+		content += "<title>메디폼 재활병원</title>";
+		content += "</head>";
+		content += "<body>";
+		content += "<div style='margin:100px;'>";
+		content += "<h1>귀하의 회원가입 신청 결과 <font color='red'>승인</font> 처리 되었습니다.</h1>";
+		content += "<p>비밀번호를 확인해주시고, 로그인 후 반드시 비밀번호를 변경하여 주세요.<p>";
+		content += "<br/>";
+		content += "<hr/>";
+		content += "<h2>아이디 : "+ empVO.getEmpNo() + "</h2>";
+		content += "<h2>임시비밀번호 : "+ empVO.getEmpPw() + "</h2>";
+		content += "<br/>";
+		content += "<hr/>";
+		content += "</div>";
+		content += "</body>";
+		
+		sb.append(content);
+		
+		return sb.toString();
+	}
+	
+	
+}

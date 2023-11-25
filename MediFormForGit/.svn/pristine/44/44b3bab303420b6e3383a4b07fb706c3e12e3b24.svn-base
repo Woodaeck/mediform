@@ -1,0 +1,23 @@
+package kr.or.ddit.administration.vo;
+
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class NoticeBoardVO {
+
+	private int ntbdNo;
+	private String ntbdSj;
+	private String ntbdWriter;
+	private Date ntbdDay;
+	private String ntbdCn;
+	private String ntbdAtchmnfl;
+	private int ntbdRncnt;
+	private int ntbdIpcrAt;
+	private Date ntbdUpdde;
+	
+	
+	
+	
+}

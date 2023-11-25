@@ -1,0 +1,14 @@
+package kr.or.ddit.administration.service;
+
+import java.util.List;
+
+import kr.or.ddit.administration.vo.NoticeBoardVO;
+import kr.or.ddit.administration.vo.PaginationInfoVO;
+
+public interface IBoardService {
+
+	int selectBoardCount(PaginationInfoVO<NoticeBoardVO> pagingVO);
+
+	List<NoticeBoardVO> selectBoardList(PaginationInfoVO<NoticeBoardVO> pagingVO);
+
+}

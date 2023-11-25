@@ -1,0 +1,24 @@
+package kr.or.ddit.manager.service.impl;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.common.vo.EmployeeVO;
+import kr.or.ddit.manager.service.IManagerService;
+import kr.or.ddit.mapper.manager.ManagerEmployeeMapper;
+
+@Service
+public class ManagerServiceImpl implements IManagerService{
+
+	@Inject
+	private ManagerEmployeeMapper managerMapper;
+	
+	@Override
+	public List<EmployeeVO> ApplicationList() {
+		return managerMapper.ApplicationList();
+	}
+
+}

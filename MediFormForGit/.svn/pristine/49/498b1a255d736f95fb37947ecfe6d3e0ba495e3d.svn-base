@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.common.ChattingMapper">
+
+	<select id="friendList" resultType="employeeVO">
+	
+		select 
+			EMP_TELNO
+			, EMP_ADRES1
+			, EMP_NM
+			, EMP_ENCPN
+			, EMP_CLSF
+			, EMP_SE
+			, EMP_SEXDSTN
+			, EMP_PROFILE
+			, EMP_RRNO1
+			, EMP_ADRES2
+			, EMP_EXP
+			, EMP_RGSDE
+			, EMP_NO
+			, EMP_HFFC_AT
+			, EMP_UPDDE
+			, EMP_EMAIL
+		from employee
+	
+	
+	</select>
+
+
+
+
+</mapper>

@@ -1,0 +1,85 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
+
+
+<div class="card">
+	<div class="card-header border-bottom">
+		<div class="row flex-between-end">
+			<div class="col-auto align-self-center">
+				<h5 class="mb-0" id="header">공지사항</h5>
+			</div>
+			<div class="col-auto align-self-center">
+				<button onclick="location.href='/mediform/admin/board/insert'" class="btn btn-outline-primary me-1 mb-1" type="button">새글작성</button>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="row card-body pt-0">
+		<div class="tab-content">
+			<div class="tab-pane preview-tab-pane active" role="tabpanel"
+				aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+				id="dom-1123d529-5101-4101-b597-dac496b93923">
+
+
+				<div class="table-responsive scrollbar">
+					<table class="table table-hover table-striped overflow-hidden">
+						<thead>
+							<tr id="" class="bg-light">
+								<th class="col-1" scope="col">번호</th>
+								<th class="col-6" scope="col">제목</th>
+								<th class="col-1" scope="col">작성자</th>
+								<th class="col-2 text-center" scope="col">게시일자</th>
+								<th class="col-1 text-center" scope="col">조회수</th>
+								<th class="text-end" scope="col">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+						
+						
+						
+							<tr>
+								<td>1</td>
+								<td class="text-nowrap">안녕하세요 메디폼 재활병원 공지사항입니다 확인해주시기 바랍니다</td>
+								<td>홍길동</td>
+								<td class="text-center">2023.10.10</td>
+								<td class="text-center">150</td>
+								
+								
+								<td class="text-end">
+									<div>
+										<button class="btn btn-link p-0" type="button"
+											data-bs-toggle="tooltip" data-bs-placement="top" title="수정">
+											<span class="text-500 fas fa-edit"></span>
+										</button>
+										<button class="btn btn-link p-0 ms-2" type="button"
+											data-bs-toggle="tooltip" data-bs-placement="top"
+											title="삭제">
+											<span class="text-500 fas fa-trash-alt"></span>
+										</button>
+									</div>
+								</td>
+								
+								
+							</tr>
+							
+							
+							
+							
+							
+							
+							
+						</tbody>
+					</table>
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+</div>

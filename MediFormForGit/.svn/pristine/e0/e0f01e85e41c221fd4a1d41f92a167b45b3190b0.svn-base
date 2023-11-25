@@ -1,0 +1,11 @@
+package kr.or.ddit.manager.service;
+
+import java.util.List;
+
+import kr.or.ddit.common.vo.EmployeeVO;
+
+public interface IManagerService {
+
+	public List<EmployeeVO> ApplicationList();
+
+}

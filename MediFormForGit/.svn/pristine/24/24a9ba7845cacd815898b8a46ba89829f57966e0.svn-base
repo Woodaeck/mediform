@@ -1,0 +1,569 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>치료 환자 리스트</title>
+
+    <!-- 추가한 CSS 스타일 -->
+    <style>
+/*         body { */
+/* /*             background-color: #e6e6ff; /* 연한 파란색 배경 색상 */ */ */
+/*         } */
+
+    .card { 
+            border: 1px solid #b3b3cc; /* 카드 테두리 스타일 */ */
+            border-radius: 10px; /* 카드 모서리 라운딩 */ */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */ */
+         } 
+         
+    .card img {
+	        max-height: 200px; /* 이미지의 최대 높이를 200px로 설정 */
+	        max-width: 100%; /* 이미지의 최대 너비를 부모 요소에 맞춤 */
+	        object-fit: contain; /* 이미지가 비율을 유지하면서 부모 요소에 맞게 맞춥니다. */
+   		 }
+         
+
+/*         .btn-primary { */
+/*             background-color: #3366cc; /* 원래 파란색 버튼 색상 */ */
+/*             border: 1px solid #2554ab; */
+/*         } */
+
+/*         .btn-primary:hover { */
+/*             background-color: #2554ab; /* 버튼에 호버 시 색상 변경 */ */
+/*         } */
+
+/*         .card img { */
+/*             max-width: 100%; /* 이미지 최대 너비 조정 */ */
+/*             height: auto; /* 이미지 높이 자동 조정 */ */
+/*             cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능하게 함 */ */
+/*         } */
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+</head>
+<body>
+	<div class="container-fulid">
+		<div class="row">
+			<div class="col-5 text-center"> 
+				<h1>치료 환자 리스트</h1> 
+			</div>
+			<div class="col-7">
+				<div class="card">
+				
+					<div class="card-header text-center my-0 " style="background-color: midnightblue">
+						<h3 class="text-white">치료실</h3>
+					</div>
+					
+					<div class="card-body text-center">
+						<table>
+							<tr>
+								<td>
+									<div class="card m-3">
+									
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										
+										<div class="card-body">
+											<img alt="" src="/resources/image/therapist/bed.png" width="200px" id="image1">
+										</div>
+										
+										<div class="card-footer">
+										</div>
+										
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active" role="tabpanel" aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923" id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+													<img alt="" src="/resources/image/therapist/bed.png" width="200px" id="image2">
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+								<td>
+									<div class="card border border-secondary m-3" style="height: 320px;">
+										<!-- 카드 헤더 시작 -->
+										<div class="card-header border-bottom p-2" style="height: 35px; background-color: midnightblue">
+											<div class="row">
+												<div class="col-12 align-self-center">
+													<h5 class="text-center text-white mb-0 fw-semi-bold" id="header">No.1</h5>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 헤더 끝 -->
+										<!-- 카드 바디 시작 -->
+										<div class="row card-body pt-0">
+											<div class="tab-content">
+												<div class="tab-pane preview-tab-pane active"
+													role="tabpanel"
+													aria-labelledby="tab-dom-1123d529-5101-4101-b597-dac496b93923"
+													id="dom-1123d529-5101-4101-b597-dac496b93923">
+													<br>
+													<div class="table-container" style="overflow-y: auto; max-height: 200px;"></div>
+												</div>
+											</div>
+										</div>
+										<!-- 카드 바디 끝 -->
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade modal-lg" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: midnightblue;">
+                    <h5 class="modal-title" id="imageModalLabel" style="color: white;">환자 정보</h5>
+                    <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close" ></button>
+                </div>
+                <div class="modal-body">
+                	<div class="row">
+	                	<div class="col-3">
+		                    <div class="input-group mb-3"><span class="input-group-text" id="inputGroup-sizing-default">이름</span>
+		  						<input class="form-control" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+							</div>
+	                	</div>
+	                	<div class="col">
+		                    <div class="input-group mb-3"><span class="input-group-text" id="inputGroup-sizing-default">성별</span>
+		  						<input class="form-control" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+							</div>
+	                	</div>
+	                	<div class="col-6">
+		                    <div class="input-group mb-3"><span class="input-group-text" id="inputGroup-sizing-default">생년월일</span>
+		  						<input class="form-control" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+							</div>
+	                	</div>
+                	</div>
+                	<div class="row">
+	                	<div class="col">
+		                    <div class="input-group mb-3"><span class="input-group-text" id="inputGroup-sizing-default">전화번호</span>
+		  						<input class="form-control" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+							</div>
+	                	</div>
+	                	<div class="col-3">
+		                    <div class="input-group mb-3"><span class="input-group-text" id="inputGroup-sizing-default">나이</span>
+		  						<input class="form-control" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+							</div>
+	                	</div>
+	                	<div class="col-3">
+		                    <div class="input-group mb-3"><span class="input-group-text" id="inputGroup-sizing-default">건강보험</span>
+		  						<input class="form-control" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+							</div>
+	                	</div>
+                	</div>
+                	<div class="row">
+                		<div class="col">
+		                    <div class="input-group mb-2"><span class="input-group-text" id="inputGroup-sizing-default">주소</span>
+		  						<input class="form-control" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+							</div>
+	                	</div>
+                	</div>
+                	<div class="row">
+                		<div class="col">
+	  						<input class="form-control mb-3" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+	                	</div>
+                	</div>
+                	<div class="row">
+                		<div class="col">
+	  						<div class="input-group mb-3"><span class="input-group-text" id="inputGroup-sizing-default">메모</span>
+		  						<input class="form-control" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+							</div>
+	                	</div>
+                	</div>
+                	<div class="row">
+                		<div class="col-9"></div>
+                		<div class="col-3 text-end">
+   							<button class="btn btn-primary me-1 mb-1 " type="button">환자배정</button>
+						</div>
+                	</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 이미지 클릭 시 모달 창 열기
+        $(document).ready(function() {
+            // 각 이미지에 대해 클릭 이벤트 설정
+            $("#image1, #image2, #image3, #image4, #image5, #image6, #image7, #image8, #image9, #image10, #image11, #image12, #image13, #image14, #image15").on("click", function() {
+                // 클릭된 이미지의 src 가져오기
+                var imgSrc = $(this).attr("src");
+                // 모달 창에 이미지 채우기
+                $("#modalImage").attr("src", imgSrc);
+                // 모달 창 열기
+                $("#imageModal").modal("show");
+            });
+        });
+    </script>
+    <script>
+    // 각 행의 카드 높이를 맞추는 함수
+    function adjustCardHeights() {
+        // 각 행을 선택
+        var rows = document.querySelectorAll(".card-row");
+        rows.forEach(function (row) {
+            var cards = row.querySelectorAll(".card");
+            var maxHeight = 0;
+            // 각 행의 카드 중에서 가장 큰 높이를 찾음
+            cards.forEach(function (card) {
+                var cardHeight = card.offsetHeight;
+                if (cardHeight > maxHeight) {
+                    maxHeight = cardHeight;
+                }
+            });
+            // 모든 카드에 동일한 높이를 적용
+            cards.forEach(function (card) {
+                card.style.height = maxHeight + "px";
+            });
+        });
+    }
+
+    // 페이지 로드 시 카드 높이 조정 함수 실행
+    window.addEventListener("load", adjustCardHeights);
+
+    // 창 크기가 변경될 때마다 카드 높이 조정 함수 실행
+    window.addEventListener("resize", adjustCardHeights);
+</script>
+</body>
+</html>

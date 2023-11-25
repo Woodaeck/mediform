@@ -1,0 +1,33 @@
+package kr.or.ddit.manager.controller;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.common.vo.EmployeeVO;
+import kr.or.ddit.manager.service.IManagerService;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping(value="/mediform/manager")
+public class ManagerEmployeeController {
+
+	@Inject
+	private IManagerService managerService; 
+	
+		// 회원가입 신청 내역 확인 페이지
+		@GetMapping(value="/employee/confirm")
+		public String employeeConfirm(Model model) {
+			log.info("employeeConfirm() 실행");
+			List<EmployeeVO> empList = managerService.ApplicationList();
+			model.addAttribute("empList", empList);
+			
+			return "manager/empConfirm";
+		}
+}

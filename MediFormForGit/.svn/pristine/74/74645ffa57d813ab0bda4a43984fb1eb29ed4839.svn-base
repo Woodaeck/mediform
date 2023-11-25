@@ -1,0 +1,24 @@
+package kr.or.ddit.administration.vo;
+
+import lombok.Data;
+
+@Data
+public class ReceiveDetailVO {
+
+	private String rcivNo; // 수납번호
+	private String clnicNo; // 진료번호
+	private String patntNo; // 환자번호
+	private int rcivdMdcxm; // 진찰료
+	private int rcivdHsptlz; // 입원료
+	private int rcivdCgffd; // 식대
+	private int rcivdMdct; // 투약료
+	private int rcivdInjctn; //주사료
+	private int rcivdTrt; // 처치료
+	private int rcivdHlthchkp; // 검사료
+	private int rcivdDgnss; // 영상진단료
+	private int rcivdEqp; // 치료재료대
+	private int rcivdReh; // 재활 및 물리치료료
+	private int rcivdTh; // 도수치료
+	private int rcivdTotAmt; // 총액
+	
+}
