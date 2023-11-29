@@ -45,6 +45,12 @@ $thisButton.css{
     display: flex;
     align-items: center;
 }
+.canvasHover:hover{
+	color: #0075ff;
+}
+.eraseHover:hover{
+	color: #e63757;
+}
 </style>
 </head>
 <body>
@@ -1033,36 +1039,6 @@ $thisButton.css{
 		</div>
 	</div>
 </div>
-<!--  그룹오더 등록 모달 끝 -->
-
-<!-- x-ray 모달창 -->
-<!-- <div class="modal fade" id="xrayModal" tabindex="-1" role="dialog" aria-hidden="true"> -->
-<!-- 	<div class="modal-dialog modal-dialog-centered" role="document" style="width: 700; max-width: 700px"> -->
-<!-- 		<div class="modal-content position-relative"> -->
-<!-- 			<div class="position-absolute top-0 end-0 mt-2 me-2 z-1"> -->
-<!-- 				<button -->
-<!-- 					class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" -->
-<!-- 					data-bs-dismiss="modal" aria-label="Close"> -->
-<!-- 				</button> -->
-<!-- 			</div> -->
-<!-- 			<div class="modal-body p-0"> -->
-<!-- 				<div class="rounded-top-3 py-3 ps-4 pe-6" style="background-color: midnightblue"> -->
-<!-- 					<h4 class="mb-1 text-white" id="modalExampleDemoLabel">X-Ray 결과</h4> -->
-<!-- 				</div> -->
-<!-- 				<div class="p-4 pb-0" id="xrayResult"> -->
-					
-<!-- 				</div> -->
-<!-- 			</div> -->
-<!-- 			<div class="modal-footer"> -->
-<!-- 				<button class="btn btn-primary" id="updateBtn" type="button">수정</button> -->
-<!-- 				<button class="btn btn-primary" id="deleteBtn" type="button">삭제</button> -->
-<!-- 				<button class="btn btn-secondary" type="button" -->
-<!-- 					data-bs-dismiss="modal">닫기</button> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
-<!-- 	</div> -->
-<!-- </div> -->
-
 <!-- 이미지 모달창 시작 -->
 <div class="modal fade" id="xrayModal" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 700px">
@@ -1081,17 +1057,23 @@ $thisButton.css{
 						</ul>
 					</div>
 					
-					<div class="card-body p-3" id="">	
+					<div class="card-body p-3" style="margin-bottom: -10px;">	
 						<div class="tab-content " id="xrayDivTab" >
 							<!-- 여기도 for문 돌려서 위의 li 값이랑 맞춰야 됨 -->
 							<!-- for문 여기까지 -->
 						</div>
 						<canvas id="xrayCanvas" width="480" height="600" style="top:131px; left:109px; position: absolute; z-index: 2;"></canvas>
-						<div style="top:10px">
-							<span class="fas fa-paint-brush fs-2 text-black" id="drawBtn"></span>
-							<span class="fas fa-palette fs-2 text-black"></span>
-							<span class="fas fa-eraser fs-2 text-black" id="eraseBtn"></span>
-							<span class="fas fa-magic fs-2 text-black" id="canvasCleanBtn"></span>
+						<div style="padding-top: 10px; padding-left: 80px;">
+							<span class="fas fa-paint-brush fs-2 pointer canvasHover" id="drawBtn"></span>
+							<span class="fas fa-palette fs-2 pointer canvasHover" style="position: relative;" id="drawColor"></span>
+							<div id="colorBoard" style="border: 2px; align-items: center; display:none; background-color: white; position: absolute; height: 25px; width: 89px; left: 105px; bottom: 50px; z-index: 3;">
+								<div id="canvasBlack" class="pointer canvasColor" style="margin-left: 5px; background-color: black; height: 20px; width: 20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="단축키 1"></div>
+								<div id="canvasRed" class="pointer canvasColor" style="background-color: red; height: 20px; width: 20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="단축키 2"></div>
+								<div id="canvasBlue" class="pointer canvasColor" style="background-color: blue; height: 20px; width: 20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="단축키 3"></div>
+								<div id="canvasYellow" class="pointer canvasColor" style="background-color: yellow; height: 20px; width: 20px; " data-bs-toggle="tooltip" data-bs-placement="top" title="단축키 4"></div>
+							</div>
+							<span class="fas fa-eraser fs-2 pointer eraseHover" id="eraseBtn"></span>
+							<span class="fas fa-magic fs-2 pointer eraseHover" id="canvasCleanBtn"></span>
 							<input type="range" id="canvasRange" min="0.1" max="10.0" step="0.1" value="5">
 						</div>						
 					</div>
@@ -1159,9 +1141,8 @@ function formatDateNoTime(timeStamp){
     return formattedDate;
 }
 
+//진료대기 환자 리스트
 $(function(){
-	
-	//진료대기 환자 리스트
 	setInterval(updateList, 5000);
 	updateList();
 	
@@ -1330,7 +1311,7 @@ $(function(){
 
 	var thisText = "";
 	
-	// 진료대기 때 호출
+	// 진료대기 때 호출 hover
 	$(document).on('mouseover', '.callbutton', function() {
 		thisText = $(this).text();
 		if(thisText == '진료대기' || thisText == '검사완료'){
@@ -2204,7 +2185,7 @@ $(function(){
 		// 환자 나이 값 초기화
 		$("#patntAgeDt").val(""); 
 		// 환자 연락처 값 초기화
-		$("#patntTelnoDt").val(""); 
+		$("#patntTelDt").val(""); 
 		// 환자 보험여부 값 초기화
 		$("#patntHlthinsAtDt").val(""); 
 		// 환자 입원여부 값 초기화
@@ -2524,7 +2505,7 @@ $(function(){
 		
 		$("#patntRrno1Dt").val(birth); 
 		$("#patntAgeDt").val(patntAge + "세"); 
-		$("#patntTelnoDt").val(patntTelno); 
+		$("#patntTelDt").val(patntTelno); 
 		if(patntHlthinsAt == "Y"){
 			patntHlthinsAt = "O"
 		}else if(patntHlthinsAt == "N"){
@@ -4116,6 +4097,7 @@ $(".allDelBtn").on("click", function(event){
 	    let drawMode = false;
 	    let eraseMode = false;
 	    let isErase = false;
+	    let canvasColor = false;
 	    canvasReset();
 	    
 //	    lineCap 캔버스 펜 끝 모양 바꾸기
@@ -4125,62 +4107,73 @@ $(".allDelBtn").on("click", function(event){
 	      
 	      // 1번을 누를 때 색상
 	      if(keyCd == 49){
-	         context.strokeStyle = "red";
+	         enableDrawing();
+	         context.strokeStyle = "black";
+	         canvas.style.cursor = 'url("../../../resources/image/doctor/brushIcon.png"), auto';
 	      // 2번을 누를 때 색상
 	      }else if(keyCd == 50){
-	         context.strokeStyle = "blue";
+	    	 enableDrawing();
+	         context.strokeStyle = "red";
+	         canvas.style.cursor = 'url("../../../resources/image/doctor/brushIconRed.png"), auto';
 	      // 3번을 누를 때 색상
 	      }else if(keyCd == 51){
-	         context.strokeStyle = "green";
-	      }else if(keyCd == 97){
-	         context.lineWidth = 10;
-	      }else if(keyCd == 98){
-	         context.lineWidth = 20;
-	      }else if(keyCd == 99){
-	         context.lineWidth = 30;
-	      }else if(keyCd == 96){
-	         context.lineWidth = 5;
+	    	 enableDrawing();
+	         context.strokeStyle = "blue";
+	         canvas.style.cursor = 'url("../../../resources/image/doctor/brushIconBlue.png"), auto';
 	      }else if(keyCd == 52){
-	         context.strokeStyle = "black";
+	    	 enableDrawing();
+	         context.strokeStyle = "yellow";
+	         canvas.style.cursor = 'url("../../../resources/image/doctor/brushIconYellow.png"), auto';
 	      }
 	   });
 	   
+		// 브러쉬 활성화
 	    function enableDrawing() {
-	        canvas.style.cursor = 'url("pencil-cursor.png"), auto';
 	        drawMode = true;
-	        $("#drawBtn").removeClass("text-black").addClass("text-primary");
+	        $("#drawBtn").css("color", "#0075ff");
 	    }
-
+		
+	    // 브러쉬 비활성화
 	    function disableDrawing() {
 	        canvas.style.cursor = 'default';
-	        $("#drawBtn").removeClass("text-primary").addClass("text-black");
 	        drawMode = false;
+	        $("#drawBtn").css("color", "");
 	    }
 	    
 	    // 브러쉬 아이콘 클릭
 	    $("#drawBtn").on("click",function(){
 	        if (drawMode) {
 	           disableDrawing();
- 	           console.log("다시 누름");
 	        } else {
- 	           console.log(" 누름");
+	        	canvas.style.cursor = 'url("../../../resources/image/doctor/brushIcon.png"), auto';
 	        	eraseMode = false;
-	            $("#eraseBtn").removeClass("text-danger").addClass("text-black");
+	            $("#eraseBtn").css("color","");
 	            enableDrawing();
- 	           console.log("drawMode : ", drawMode);
 	        }
 	    });
 	    
+	    // 지우개 활성화
+	    function enableErasing() {
+	        canvas.style.cursor = 'url("../../../resources/image/doctor/eraseIcon.png"), auto';
+	        eraseMode = true;
+	        $("#eraseBtn").css("color", "#e63757");
+	    }
+	    
+	    // 지우개 비활성화
+	    function disableErasing() {
+	    	// 마우스 커서 모양을 되돌려 놓는다.
+	        canvas.style.cursor = 'default';
+	        eraseMode = false;
+	        $("#eraseBtn").css("color", "");
+	    }
+	    
+	    // 지우개 버튼 클릭시 이벤트
 	    $("#eraseBtn").on("click",function () {
 	        if (eraseMode) {
-	        	eraseMode = false;
-	        	isErase = false;
-	        	$(this).removeClass("text-danger").addClass("text-black");
-	        	enableDrawing();
+	        	disableErasing();
 	        }else {
 	            disableDrawing();
-	            eraseMode = true;
- 	            $(this).removeClass("text-black").addClass("text-danger");
+	        	enableErasing();
 	        }
 	    });
 	    
@@ -4189,10 +4182,12 @@ $(".allDelBtn").on("click", function(event){
 	    	context.clearRect(0,0,canvas.width,canvas.height);
 	    });
 		
+	    // 브러쉬 및 지우개 크기 조절
 	    $("#canvasRange").on("change", function(){
 	    	context.lineWidth = $("#canvasRange").val();
 	    });
 	    
+	    // 캔버스에서 마우스 누른 상태
 	    $(canvas).on("mousedown", function(e){
 	        if(drawMode) {
 	            isDrawing = true;
@@ -4200,34 +4195,88 @@ $(".allDelBtn").on("click", function(event){
 	            context.moveTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
 	        }else if(eraseMode){
 	        	isErase = true;
-	        	context.clearRect(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top, context.lineWidth, context.lineWidth);
 	        }
 	    });
-
+		
+	    // 캔버스 컬러보드 클릭시 이벤트
+	    $("#drawColor").on("click",function(){
+	    	// 캔버스 컬러보드 선택되어 있을 때
+	    	if(canvasColor){
+	    		canvasColorOff();
+	    	}else{
+		    	// 색상 보드 보이게하기
+		    	$("#colorBoard").css("display", "flex");
+		    	// 컬러판 색상 주기
+		    	$(this).css("color", "#0075ff");
+		    	canvasColor = true;
+	    	}
+	    });
+	    
+	 	// 캔버스 컬러판 초기화
+	    function canvasColorOff(){
+	 		// 색상 보드 숨기기
+	    	$("#colorBoard").css("display", "none");
+	 		// 캔버스 컬러판 색상 없애기
+	    	$("#drawColor").css("color", "");
+	 		// 캔버스 색상판 꺼짐
+	    	canvasColor = false;
+	    };
+	    
+	    // 캔버스 색상 클릭시
+	    $(".canvasColor").on("click", function(e) {
+	    	// 지우개 모드 끔
+	    	disableErasing();
+	    	enableDrawing();
+			var clickColor = e.target.id;
+			if(clickColor == "canvasBlack"){
+				context.strokeStyle = "black";
+				canvas.style.cursor = 'url("../../../resources/image/doctor/brushIcon.png"), auto';
+			}else if(clickColor == "canvasRed"){
+				context.strokeStyle = "red";
+				canvas.style.cursor = 'url("../../../resources/image/doctor/brushIconRed.png"), auto';
+			}else if(clickColor == "canvasBlue"){
+				context.strokeStyle = "blue";
+				canvas.style.cursor = 'url("../../../resources/image/doctor/brushIconBlue.png"), auto';
+			}else if(clickColor == "canvasYellow"){
+				context.strokeStyle = "yellow";
+				canvas.style.cursor = 'url("../../../resources/image/doctor/brushIconYellow.png"), auto';
+			}
+			canvasColorOff();
+			
+		});
+	    
+	    // 캔버스에서 마우스 움직일 때
 	    $(canvas).on("mousemove", function (e) {
+	    	// 캔버스에서 마우스 누른 상태면 isDrawing이 true상태
 	        if (isDrawing) {
 	            context.lineTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
 	            context.stroke();
+	            
+	        // 캔버스에서 마우스 누른 상태면 isErase이 true상태
 	        }else if(isErase){
 	        	context.clearRect(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top, context.lineWidth, context.lineWidth);
 	        	
 	        }
 	    });
-
+		
+	    // 마우스 누른 걸 뗐을 때 중지
 	    $(canvas).on("mouseup", function () {
 	        isDrawing = false;
-	    });
-
-	    $(canvas).on("mouseleave", function () {
-	        isDrawing = false;
+	        isErase = false;
 	    });
 		
+	    // 마우스가 캔버스를 벗어났을 때 중지
+	    $(canvas).on("mouseleave", function () {
+	        isDrawing = false;
+	        isErase = false;
+	    });
+		
+	    // 캔버스 버튼들 초기화
 	   	function canvasReset(){
-	   		isDrawing = false;
-		    drawMode = false;
-		    eraseMode = false;
-// 		    $("#drawBtn").text("펜슬");
-// 		    $("#eraseBtn").text("지우개");
+		    disableDrawing();
+		    disableErasing();
+		    canvasColorOff();
+		    context.strokeStyle = "black";
 		    $("#canvasRange").val("5");
 		    context.lineWidth = $("#canvasRange").val();
 	   	}
@@ -4426,10 +4475,12 @@ $(".allDelBtn").on("click", function(event){
 						}
 
 					   	// 파일번호
-					   if(res.fileNo == null || res.fileNo == "" || res.fileNo ==undefined){
+					   if(res.hcrtfNo == null || res.hcrtfNo == "" || res.hcrtfNo ==undefined){
 					      $("#cdFileNoDt").text("");
 					   }else{
-					      $("#cdFileNoDt").text(res.fileNo);
+						  var hcrtfNo = res.hcrtfNo;
+						  var hcrtfNoFormat = hcrtfNo.substr(2);
+					      $("#cdFileNoDt").text(hcrtfNoFormat);
 					   }
 					   
 					   // 환자 이름
@@ -4481,9 +4532,12 @@ $(".allDelBtn").on("click", function(event){
 						   $("#prsmpAtNSpan").css("display", "none");
 					   }else{
 					      $(".paRadio").css("display", "none");
+					      $("#prsmpAtYSpan").css("display", "block");
 					      if(res.prsmpAt == "Y"){
 					         $("#prsmpAtYSpan").text("[V]");
+					         $("#prsmpAtNSpan").text("[ ]");
 					      }else if(res.prsmpAt == "N"){
+					    	 $("#prsmpAtYSpan").text("[ ]");
 					         $("#prsmpAtNSpan").text("[V]");
 					      }
 					   }
@@ -4522,7 +4576,6 @@ $(".allDelBtn").on("click", function(event){
 					   }
 					   
    						// 의사 소견
-						console.log("res.hcrtfDocNote", res.hcrtfDocNote);
 						if(res.hcrtfDocNote == null || res.hcrtfDocNote == "" || res.hcrtfDocNote == undefined){
 							$("#cdDocNoteDtSpan").css("display", "none");
 							$("#cdDocNoteDtTa").css("display", "block");
