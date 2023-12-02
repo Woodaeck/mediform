@@ -2396,7 +2396,9 @@ $(function(){
 			
 			// 환자 정보 값 초기화
 			cleanPatientInfo();
-			
+			// 환자 진료작성 정보 초기화
+			cleanClinicInfo();
+
 			// 바이탈 넣어주기
 			callBtnSelectPatientVital(patntNo);
 			// 환자정보에 값 넣어주기
@@ -2442,6 +2444,8 @@ $(function(){
 		
 		// 환자 정보 값 초기화
 		cleanPatientInfo();
+		// 환자 진료작성 정보 초기화
+		cleanClinicInfo();
 		
 		// 바이탈 넣어주기
 		callBtnSelectPatientVital(patntNo);
@@ -2449,9 +2453,6 @@ $(function(){
 		callBtnSelectPatient(patntNo);
 		// 환자 이전 진료 날짜 생성
 		selectClnicTime(patntNo);
-		
-		// 환자 검사 결과 조회
-		//selectMEOResult(patntNo, rceptNo);
 		
 		patientInput.blur();
 		$(patientDropMenu).hide();
