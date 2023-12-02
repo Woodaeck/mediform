@@ -1328,7 +1328,8 @@ $(function(){
 //=== 환자 정보 불러오기 시작 ============================================================================	
 	// 호출 중복 방지(호출하면 false로 바뀌고 진료 등록 완료 혹은 검사오더가 완료되면 true로 바뀜)
 	var watingCallBtn = true;
-	//호출 버튼 클릭시 상세정보(진료대기 호출) (1번 실행)
+
+	//호출 버튼 클릭시 상세정보(진료대기 호출) (1번)
 	$(document).on("click", ".callbutton", function(){
 		var callBtn = $(".callbutton");
 		callBtn.each(function(i, item){
@@ -1388,18 +1389,16 @@ $(function(){
 			}
 		});
 	});
-	
+
+	// 초기화 버튼 클릭시 환자 정보 초기화
 	$("#cleanBtn").on("click", function(){
 		// 진료 등록 부분 값 초기화
 		cleanPatientInfo();
 		// 환자 정보 부분 값 초기화
 		cleanClinicInfo();
 	});
-		
 	
-	
-	
-	//호출 버튼 클릭시 상세정보 호출(호출 버튼 클릭 안에 쓰임)(2번 실행)
+	//호출 버튼 클릭시 상세정보 호출(호출 버튼 클릭 안에 쓰임)(2번)
 	function clickCallBtn(patntNo, rceptNo, statusNo){
 		radioNo1 = 0;
 		radioNo2 = radioNo1+1;
@@ -1455,6 +1454,10 @@ $(function(){
 			cleanPatientInfo();
 			// 환자 진료 등록 값 초기화
 			cleanClinicInfo();
+			// 진료 시작 시간 세팅
+			var clnicStartTime = new Date();
+ 			var clnicStartTimeFormat = moment(clnicStartTime).format('YYYY년 MM월 DD일 HH:mm');
+ 			$("#clnicTimeInput").val(clnicStartTimeFormat);
 			// 접수 번호 세팅
 			$("#rceptNo").val(rceptNo);
 			// 환자 정보 테이블에 값 넣기(patntNo 사용)
@@ -1465,8 +1468,414 @@ $(function(){
 			selectClnicTime(patntNo);
 		}
 	}
+
+	// 환자정보 테이블에 값 넣기(patntNo 사용)(selectPatientAjax 사용)(3번)
+	function callBtnSelectPatient(patntNo){
+		var patntObj = {
+				"patntNo" : patntNo
+		}
+		
+		$.ajax({
+			type : "post",
+			url  : "/mediform/patient/info",
+			data : JSON.stringify(patntObj),
+			contentType : "application/json; charset=utf-8",
+		        beforeSend : function(xhr){
+		            //ajax호출 중 처리
+		            //글로벌 변수로 설정한 csrf token 셋팅
+		       		xhr.setRequestHeader(header,token);
+		        },
+			success : function(res){
+				var patientDropItemHtml = "";
+				patientTbodyHtml = "";
+				$(res).each(function(idx, item){
+					var patientBirth = birthFormat(this.patntRrno1, this.patntRrno2);
+					// 환자 검색창 있는 곳에 위치(3-1번)
+					selectPatientAjax(this.patntNo, this.patntNm, this.patntAge, this.patntRrno1, this.patntRrno2, patientBirth,
+							this.patntSexdstn, this.patntTelno, this.patntHlthinsAt, this.patntHsptlzAt, this.prtctorNm, this.prtctorTelno, this.patntMemo,
+							this.patntHeight, this.patntBdwgh, this.patntBdp);
+				});
+			},
+			error : function(err){
+			}
+		});
+	}
+
+	// 선택된 환자 바이탈 정보 가져와서 넣어주기(patntNo 사용)(4번)
+	function callBtnSelectPatientVital(patntNo){
+		
+		var patntObj = {
+				"patntNo" : patntNo
+		}			
+		$.ajax({
+			type : "post",
+			url  : "/mediform/doctor/vitals/select",
+			data : JSON.stringify(patntObj),
+			contentType : "application/json; charset=utf-8",
+	        beforeSend : function(xhr){
+	            //ajax호출 중 처리
+	            //글로벌 변수로 설정한 csrf token 셋팅
+	            xhr.setRequestHeader(header,token);
+	        },
+			success : function(res){
+				// 값이 없을 경우 - 넣어주기 
+				var hghrkHhprs = "";
+				var lwtrkHhprs = "";
+				var bdheat = "";
+				if(res.hghrkHhprs == null || res.hghrkHhprs == ""){
+					hghrkHhprs = "-";
+				}else{
+					hghrkHhprs = res.hghrkHhprs;
+				}
+				if(res.lwtrkHhprs == null || res.lwtrkHhprs == ""){
+					lwtrkHhprs = "-";
+				}else{
+					lwtrkHhprs = res.lwtrkHhprs;
+				}
+				if(res.bdheat == null || res.bdheat == ""){
+					bdheat = "-";
+				}else{
+					bdheat = res.bdheat;
+				}
+				$("#hghrkHhprsDt").text(hghrkHhprs);
+				$("#lwtrkHhprsDt").text(lwtrkHhprs);
+				$("#bdheatDt").text(bdheat);
+				
+			},
+			error : function(err){
+			}
+		});
+		
+	}
+
+	// 선택된 환자 진료일 가져오기(patntNo 사용)(검사완료 후 호출일 경우 clinicRecall 호출)(5번)
+	function selectClnicTime(patntNo){
+		
+		var patntObj = {
+			"patntNo" : patntNo
+		}
+		
+		$.ajax({
+			type : "post",
+			url  : "/mediform/doctor/clinic/select/time",
+			data : JSON.stringify(patntObj),
+			contentType : "application/json; charset=utf-8",
+	        beforeSend : function(xhr){
+	            //ajax호출 중 처리
+	            //글로벌 변수로 설정한 csrf token 셋팅
+	            xhr.setRequestHeader(header,token);
+	        },
+			success : function(res){
+				var flag = false;
+				var clnicTimesHtml = "";
+				$(res).each(function(i, item){
+					var clnicTimeFormat = this.clnicTime.split(" ")[0].split("-");
+					var year = clnicTimeFormat[0].substring(2,4);
+					var clnicTime = year + "." + clnicTimeFormat[1] + "." +clnicTimeFormat[2] ;
+					// 진료여부 컬럼이 Y일 때, 전 진료기록 가져오기
+					if(this.clnicAt === "Y"){
+						clnicTimesHtml += "<tr><td><button id='allClnicTime"+i+"' class='btn btn-sm btn-falcon-default allClnicTime' type='button' data-clnicno='"+this.clnicNo+"' >" + clnicTime + "</button></td></tr>";
+						// 여러번 실행되는 거 방지용
+						if(flag === false){
+							pastClinic(this.clnicNo, false);
+							flag = true;
+						}
+					// 진료여부 컬럼이 N일 때
+					}else if(this.clnicAt === "N"){
+						// 검사 완료 재호출 부분임 진료작성 부분에 있는 기록 가져오는 함수 실행 해야함
+						pastClinic(this.clnicNo, true);
+					}
+				});
+				// 전처방 진료 날짜 생성
+				$("#allClnicTimeDt").html(clnicTimesHtml);
+			},
+			error : function(err){
+			}
+		});
+	}
+
+	// 진료 날짜 선택시 이벤트 (전처방 ajax 실행)
+	// (pastClinic 호출)
+	$(document).on("click", ".allClnicTime", function(){
+		var clnicNo = $(this).data("clnicno");
+		// 검사완료 호출인지 판단하기 위해 쓰는 변수(전처방 ajax에서 어디로 보낼지 선택한다.)
+		var recall = false;
+		// 전처방 ajax(진료 번호, 검사완료여부(true || false))
+		pastClinic(clnicNo, recall);
+		
+	});
+
+	// 진료기록 ajax(진료 번호, 검사완료여부(true || false))
+	// (검사완료일 경우 clinicRecall 호출 / 진료대기 호출일 경우 pastClinicData 호출)(5-1번)
+	function pastClinic(clnicNo, recall){
+		
+		var clnicObj = {
+			"clnicNo" : clnicNo
+		}
+		
+		$.ajax({
+			type : "post",
+			url  : "/mediform/doctor/clinic/select",
+			data : JSON.stringify(clnicObj),
+			contentType : "application/json; charset=utf-8",
+	        beforeSend : function(xhr){
+	            //ajax호출 중 처리
+	            //글로벌 변수로 설정한 csrf token 셋팅
+	            xhr.setRequestHeader(header,token);
+	        },
+			success : function(res){
+				var sckwndSe = [];
+				var kcd = [];
+				var sckwndKr = [];
+				var sckwndEn = [];
+				var mdlrtCd = [];
+				var mdlrtNm = [];
+				var mdlrtCurer = [];
+				var hlthchkpCd = [];
+				var hlthchkpNm = [];
+				var hlthchkpResult = [];
+				var medcinCd = [];
+				var prscrptnNm = [];
+				var mdctnCpcty = [];
+				var mdctnUnit = [];
+				var mdctnCo = [];
+				var mdctnPd = [];
+				var mdctnCoursUsage = [];
+				
+				$(res.sickAndWoundedVOList).each(function(sawI, sawItem){
+					if(sawItem.sckwndSe != null && sawItem.sckwndSe != "" && sawItem.sckwndSe == 1){
+						sckwndSe.push(sawItem.sckwndSe);
+						kcd.push(sawItem.kcd);
+						sckwndKr.push(sawItem.sckwndKr);
+						sckwndEn.push(sawItem.sckwndEn);
+					}else if(sawItem.sckwndSe != null && sawItem.sckwndSe!= "" && sawItem.sckwndSe == 2){
+						sckwndSe.push(sawItem.sckwndSe);
+						kcd.push(sawItem.kcd);
+						sckwndKr.push(sawItem.sckwndKr);
+						sckwndEn.push(sawItem.sckwndEn);
+					}else if(sawItem.sckwndSe != null && sawItem.sckwndSe!= "" && sawItem.sckwndSe == 3){
+						sckwndSe.push(sawItem.sckwndSe);
+						kcd.push(sawItem.kcd);
+						sckwndKr.push(sawItem.sckwndKr);
+						sckwndEn.push(sawItem.sckwndEn);
+					}
+				});
+				$(res.selectMedicalTreatmentRecordVOList).each(function(mtrI, mtrItem){
+					var curer = "";
+					if(this.mdlrtCd !== null && this.mdlrtCd !== ""){
+						mdlrtCd.push(this.mdlrtCd);
+						mdlrtNm.push(this.mdlrtNm);
+						if(this.mdlrtCurer === null || this.mdlrtCurer === ""){
+							curer = "배정된 치료사가 없습니다."
+						}else{
+							curer = this.mdlrtCurer;
+						}
+						mdlrtCurer.push(curer);
+					}
+				});
+				// 엑스레이에 보낼 mecCd만 골라내기
+				var xrayMecCdResult = [];
+				$(res.medicalExaminationOrderVOList).each(function(meoI, meoItem){
+					if(this.hlthchkpCd != null && this.hlthchkpCd !=""){
+						hlthchkpCd.push(this.hlthchkpCd);
+						hlthchkpNm.push(this.hlthchkpNm);
+						if(this.hlthchkpCd === "HC003" && (this.hlthchkpResult == null || this.hlthchkpResult == "")){
+							hlthchkpResult.push(this.mecCd);
+							xrayMecCdResult.push(this.mecCd);
+						}else if(this.hlthchkpCd != "HC003" && this.hlthchkpResult == null || this.hlthchkpResult == ""){
+							hlthchkpResult.push('null');
+						}else{
+							hlthchkpResult.push(this.hlthchkpResult);
+						}
+					}
+				});
+				$(res.prescriptionOrderVOList).each(function(poI, poItem){
+					if(this.prscrptnCd != null && this.prscrptnCd != ""){
+						medcinCd.push(this.medcinCd);
+						prscrptnNm.push(this.prscrptnNm);
+						mdctnCpcty.push(this.mdctnCpcty);
+						mdctnUnit.push(this.mdctnUnit);
+						mdctnCo.push(this.mdctnCo);
+						mdctnPd.push(this.mdctnPd);
+						mdctnCoursUsage.push(this.mdctnCoursUsage);
+						
+					}
+				});
+				
+				if(recall){
+					// 검사완료 호출일 때 사용
+					selectPastTable(res.clnicTime, clnicNo, res.empNm, res.atfssDt, res.clnicCn, res.clnicMemo, sckwndSe, kcd, sckwndKr, sckwndEn);
+					
+					// x-ray에 보낼것(mecCd 배열)
+					if(xrayMecCdResult.length > 0){
+						
+						selectXrayResult(clnicNo, 'Y');
+					}
+				}else{
+					// 진료대기 호출일 때 사용
+					pastClinicData(res.clnicTime, clnicNo, res.empNm, res.atfssDt, 
+								res.clnicCn, sckwndSe, kcd, sckwndKr, mdlrtCd, mdlrtNm, mdlrtCurer,
+								hlthchkpCd, hlthchkpNm, hlthchkpResult, medcinCd, prscrptnNm, mdctnCpcty, mdctnUnit,
+								mdctnCo, mdctnPd, mdctnCoursUsage, res.clnicMemo);
+					
+				}
+			},
+			error : function(err){
+			}
+		});
+	}
 	
-	// x-ray 검사 결과
+	// 검사완료 호출일 때 사용(pastClinic 안에서 사용)(5-1-1번)
+	//검사완료 환자를 호출할 경우 테이블에 다시 값을 넣어줘야 하는데 오더 테이블만으로는 역부족...
+	function selectPastTable(clnicTime, clnicNo, empNm, atfssDt, clnicCn, clnicMemo,
+			sckwndSe, kcd, sckwndKr, sckwndEn){
+		sawObj = {
+			"sckwndSeList" : sckwndSe,
+			"kcdList" : kcd,
+			"sckwndKrList" : sckwndKr,
+			"sckwndEnList" : sckwndEn
+		}
+		
+		clinicVO = {
+			"clnicNo" : clnicNo,
+			"sickAndWoundedVO" : sawObj
+		}
+		
+		
+		$.ajax({
+			type : "post",
+			url  : "/mediform/doctor/clinic/select/pastTable",
+			data : JSON.stringify(clinicVO),
+			contentType : "application/json; charset=utf-8",
+			beforeSend : function(xhr){
+			//ajax호출 중 처리
+			//글로벌 변수로 설정한 csrf token 셋팅
+			xhr.setRequestHeader(header,token);
+			},
+			success : function(res){
+				
+				// 상병
+				var msick = [];
+				var msickArr = res.sickAndWoundedVO.msick;
+					$(msickArr).each(function(i, item){
+						if(msickArr.length > 0){
+							msick.push(item);
+						}
+					});
+				// 치료
+				var mdlrtNm = [];
+				var mllwncAt = [];
+				var mdlrtAmount = [];
+				var mdlrtCl = [];
+				var mdlrtCd = [];
+				$(res.selectMedicalTreatmentRecordVOList).each(function(){
+					if(this.mdlrtNm != null && this.mdlrtNm != ""){
+						mdlrtCd.push(this.mdlrtCd);
+						mdlrtNm.push(this.mdlrtNm);
+						mllwncAt.push(this.mllwncAt);
+						mdlrtAmount.push(this.mdlrtAmount);
+						mdlrtCl.push(this.mdlrtCl);
+						
+					}
+				});
+				
+				//처방
+				var medcinCd = [];
+				var prscrptnNm = [];
+				var medcinMfbiz = [];
+				var mdctnCoursUsage = [];
+				var mdctnCpcty = [];
+				var mdctnUnit = [];
+				var mdctnCo = [];
+				var mdctnPd = [];
+				var medcinPc = [];
+				var medcinStandard = [];
+				$(res.prescriptionOrderVOList).each(function(){
+					if(this.medcinMfbiz != null && this.medcinMfbiz != ""){
+						medcinCd.push(this.medcinCd);
+						prscrptnNm.push(this.prscrptnNm);
+						medcinMfbiz.push(this.medcinMfbiz);
+						mdctnCoursUsage.push(this.mdctnCoursUsage);
+						mdctnCpcty.push(this.mdctnCpcty);
+						mdctnUnit.push(this.mdctnUnit);
+						mdctnCo.push(this.mdctnCo);
+						mdctnPd.push(this.mdctnPd);
+						medcinPc.push(this.medcinPc);
+						medcinStandard.push(this.medcinStandard);
+					}						
+					
+				});
+				
+				clinicRecall(clnicTime, clnicNo, empNm, atfssDt, clnicCn, clnicMemo,
+						sckwndSe, kcd, sckwndKr, sckwndEn, msick,
+						mdlrtCd, mdlrtNm, mllwncAt, mdlrtAmount, mdlrtCl,
+						medcinCd, prscrptnNm, medcinMfbiz, mdctnCoursUsage, mdctnCpcty, mdctnUnit, mdctnCo, mdctnPd, medcinPc, medcinStandard);
+			// clinicRecall 불러서 값 넣어주기(아니면 여기서 바로 테이블에 값 넣어줘도 될듯???)
+			},
+				error : function(err){
+			}
+		});
+	}
+
+	// 검사 완료 호출 시 진료 작성 값 다시 넣어주기(5-1-1-1번)
+	function clinicRecall(clnicTime, clnicNo, empNm, atfssDt, clnicCn, clnicMemo,
+			sckwndSe, kcd, sckwndKr, sckwndEn, msick,
+			mdlrtCd, mdlrtNm, mllwncAt, mdlrtAmount, mdlrtCl,
+			medcinCd, prscrptnNm, medcinMfbiz, mdctnCoursUsage, mdctnCpcty, mdctnUnit, mdctnCo, mdctnPd, medcinPc, medcinStandard){
+		// 진료 번호 값 넣기
+		if(clnicNo !== null && clnicNo !== ""){
+			$("#clnicNo").val(clnicNo);
+			$("#clnicNo").data("recall", "Y");
+		}else{
+		}
+		// 진료 시간에 값 넣기
+		if(clnicTime != null && clnicTime != ""){
+			var clnicStartTimeFormat = moment(clnicTime).format('YYYY년 MM월 DD일 HH:mm');
+			$("#clnicTimeInput").val(clnicStartTimeFormat);
+		}
+		// 발병일에 값 넣기
+		if(atfssDt != null && atfssDt != ""){
+			$("#atfssDt").val(atfssDt);
+		}
+		// 진단 내역에 값 넣기
+		if(clnicCn != null && clnicCn != ""){
+			$("#clnicCn").val(clnicCn);
+		}
+		
+		// 검사는 결과테이블에 값 넣기 때문에 여기서 안 씀
+		
+		// 상병 테이블에 값 세팅
+		if(kcd.length > 0){
+			for(var i = 0; i < kcd.length; i++){
+				selectSAWLAjax(kcd[i], sckwndKr[i], sckwndEn[i], msick[i], sckwndSe[i]);		
+			}
+		}
+		
+		// 치료 테이블에 값 세팅
+		if(mdlrtCd.length > 0){
+			for(var i = 0; i < mdlrtCd.length; i++){
+				selectMTAjax(mdlrtCd[i], mdlrtNm[i], mllwncAt[i], mdlrtAmount[i], mdlrtCl[i]);
+			}
+		}
+		// 처방 테이블에 값 세팅
+		if(medcinCd.length > 0){
+			for(var i = 0; i < medcinCd.length; i++){
+				selectMAjax(medcinCd[i], prscrptnNm[i], medcinMfbiz[i], mdctnCoursUsage[i], mdctnUnit[i], medcinPc[i], medcinStandard[i]);
+				if(mdctnCpcty[i] != null && mdctnCpcty[i] != "" && mdctnCpcty[i] > 0){
+					$(".mdctnCpctyInput:eq('"+i+"')").val(mdctnCpcty[i]);
+				}
+				if(mdctnCo[i] != null && mdctnCo[i] != "" && mdctnCo[i] > 0){
+					$(".mdctnCoInput:eq('"+i+"')").val(mdctnCo[i]);
+				}
+				if(mdctnPd[i] != null && mdctnPd[i] != "" && mdctnPd[i] > 0){
+					$(".mdctnPdInput:eq('"+i+"')").val(mdctnPd[i]);
+				}
+			}
+		}
+		
+	}
+
+	// x-ray 검사 결과(5-1-2번)
 	function selectXrayResult(clnicNo, clnicPatntAt){
 
 		var clnicNo = {
@@ -1590,8 +1999,135 @@ $(function(){
 			}
 		});
 	}
+
+	// 진료 날짜 선택시 진료 상세에 값 넣기(5-1-3번)
+	function pastClinicData(clnicTime, clnicNo, empNm, atfssDt, clnicCn, sckwndSe, kcd, sckwndKr, 
+							mdlrtCd, mdlrtNm, mdlrtCurer, hlthchkpCd, hlthchkpNm, hlthchkpResult, medcinCd,
+							prscrptnNm, mdctnCpcty, mdctnUnit, mdctnCo, mdctnPd, mdctnCoursUsage, clnicMemo){
+		// 진료 시간
+		
+		var clnicTimeFormat = "";
+		if(clnicTime == null || clnicTime == ""){
+			clnicTimeFormat = "진료 시간이 없습니다.";
+	      	}else{
+	      		var date = new Date(clnicTime);
+	      		var day = formatDate3(date);
+	      		var time = formatTime(date);
+	      		clnicTimeFormat = day + " " + time;
+	      	}
+	      	$("#pastClnicTime").text(clnicTimeFormat);
+	      	// 진료 번호
+	      	$("#pastClnicNo").text(clnicNo);
+	      	// 담당의
+	      	$("#pastEmpNm").text(empNm);
+	      	// 발병일
+			if(atfssDt !== null && atfssDt !== "" && atfssDt !== undefined){
+				var date = new Date(atfssDt);
+				var atfssDate = formatDate3(date);
+				$("#pastAtfssDt").text(atfssDate);
+			}
+	      	// 진단내역
+	      	var cliniCnCard = "";
+	      	if(clnicCn == null || clnicCn == ""){
+	      		clnicCn = "-"
+	      	}
+	      	cliniCnCard += "<div class='card p-2 m-1'>";
+	      	cliniCnCard += clnicCn + "</div>";
+	      	$("#pastClnicCn").html(cliniCnCard);
+	      	// 상병
+	      	var sawHtml = "";
+	      	if(sckwndSe[0] === null || sckwndSe[0] === "" || 1 > sckwndSe.length){
+	      		sawHtml = "-";
+	      	}else{
+		      	for(var i = 0; i < sckwndSe.length; i++){
+		      		var sckwndSeKo = "";
+		      		if(sckwndSe[i] == '1'){
+		      			sckwndSeKo = "주";
+		      		}else if(sckwndSe[i] == '2'){
+		      			sckwndSeKo = "부";
+		      		}else if(sckwndSe[i] == '3'){
+		      			sckwndSeKo = "배제";
+		      		}
+		      		
+		      		sawHtml += "<div class='card p-2 m-1'>";
+		      		sawHtml += sckwndSeKo + " | " + kcd[i] + " | " + sckwndKr[i] + "</div>";
+		      	}
+	      	}
+	      	$("#pastSAW").html(sawHtml);
+	      	// 치료
+	      	var mtrHtml = "";
+	      	if(mdlrtCd[0] === null || mdlrtCd[0] === "" || mdlrtCd.length === 0){
+	      		mtrHtml = "-";
+	      	}else{
+		      	for(var i = 0; i < mdlrtCd.length; i++){
+		      		var curer = "";
+		      		if(mdlrtCurer[i] === null || mdlrtCurer[i] === ""){
+		      			curer = '<span class="badge badge rounded-pill d-block p-1 badge-subtle-warning">치료사 미배정<span class="fas fa-ban" data-fa-transform="shrink-2"></span></span>'
+		      		}else{
+		      			curer = '<span class="badge badge rounded-pill d-block p-1 badge-subtle-success">완료<span class="fas fa-check" data-fa-transform="shrink-2"></span></span>'
+		      		}
+		      		mtrHtml += "<div class='card ps-0 py-1 m-1'>";
+		      		mtrHtml += "<div class='row ps-2'>";
+		      		mtrHtml += "<div class='col-auto pe-0' style='display: flex; align-items: center;'>";
+		      		mtrHtml += mdlrtCd[i] + " | " + mdlrtNm[i] + " | </div><div class='col-auto m-1 ps-0'>" + curer + "</div></div></div>";
+		      	}
+	      	}
+	      	$("#pastMTR").html(mtrHtml);
+	      	// 검사
+	      	
+	      	var meoHtml = "";
+	      	if(hlthchkpCd[0] === null || hlthchkpCd[0] === "" || hlthchkpCd.length === 0){
+	      		meoHtml = "-";
+	      	}else{
+		      	for(var i = 0; i < hlthchkpCd.length; i++){
+		      		var result = "";
+		      		if(hlthchkpResult[i] === null || hlthchkpResult[i] === "" || hlthchkpResult[i] === undefined || hlthchkpResult[i] == "null"){
+		      			result = '<span class="badge badge rounded-pill d-block p-1 badge-subtle-warning">검사 미완료<span class="bi-x-circle-fill"></span></span>'
+		      		}else if(hlthchkpCd[i] === "HC003"){
+		      			
+		      			result = "<a class='xrayATag' data-hlthchkpresult='" + hlthchkpResult[i] + "' data-clnicno='"+clnicNo+"' href='#'>결과보기</a></br>"
 	
-	// 검사 결과
+		      			result = "<span class='badge badge rounded-pill d-block p-1 badge-subtle-success'><a class='xrayATag' data-hlthchkpresult='" + hlthchkpResult[i] + "' href='#'>결과보기<span class='ms-1 fas fa-check' data-fa-transform='shrink-2'></span></a></span>"
+	
+		      		}else {
+		      			result =  hlthchkpResult[i];
+		      		}
+		      		meoHtml += "<div class='card ps-0 py-1 m-1'>";
+		      		meoHtml += "<div class='row ps-2'>";
+		      		meoHtml += "<div class='col-auto pe-0' style='display: flex; align-items: center;'>";
+		      		meoHtml += hlthchkpCd[i] + " | " + hlthchkpNm[i] + " | </div><div class='col-auto m-1 ps-0'>" + result + "</div></div></div>";
+		      	}
+	      	}
+	      	$("#pastMEO").html(meoHtml);
+	      	// 처방
+	      	var poHtml = "";
+	      	if(medcinCd[0] === null || medcinCd[0] === "" || medcinCd.length === 0){
+	      		poHtml = "-";
+	      	}else{
+		      	for(var i = 0; i < medcinCd.length; i++){
+		      		var dateFormat = "";
+		      		if(parseInt(mdctnPd[i]) == 0){
+		      			dateFormat = "";
+		      		}else{
+		      			dateFormat = convertDays(parseInt(mdctnPd[i]));
+		      		}
+		      		poHtml += "<div class='card p-2 m-1'>";
+		      		poHtml += medcinCd[i] + " | " + prscrptnNm[i] + " | 투여량 : " + mdctnCpcty[i] + mdctnUnit[i] + " | " + mdctnCo[i] + "회 | " + dateFormat + " | " + mdctnCoursUsage + "</div>";
+		      	}
+	      	}
+	      	$("#pastPO").html(poHtml);
+	      	
+	      	var clinicMemo1 = "";
+	      	if(clnicMemo == null || clnicMemo == ""){
+	      		clinicMemo1 = "-"; 
+	      	}else{
+		      	clinicMemo1 = "<div class='card p-2 m-1'>";
+		      	clinicMemo2 += clnicMemo + "</div>";
+	      	}
+	      	$("#pastMemo").html(clinicMemo1);
+	}
+	
+	// 검사 결과 (검사완료 환자 호출에서만 사용)(6번)
 	function selectMEOResult(patntNo, rceptNo){
 		var patientObj = {
 			"patntNo" : patntNo,
@@ -1641,537 +2177,7 @@ $(function(){
 		});
 		
 	}
-///////////////////////////검사완료 호출 시작///////////////////////////
-	// 검사 완료 호출 시 진료 작성 값 다시 넣어주기
-	function clinicRecall(clnicTime, clnicNo, empNm, atfssDt, clnicCn, clnicMemo,
-			sckwndSe, kcd, sckwndKr, sckwndEn, msick,
-			mdlrtCd, mdlrtNm, mllwncAt, mdlrtAmount, mdlrtCl,
-			medcinCd, prscrptnNm, medcinMfbiz, mdctnCoursUsage, mdctnCpcty, mdctnUnit, mdctnCo, mdctnPd, medcinPc, medcinStandard){
-		// 진료 번호 값 넣기
-		if(clnicNo !== null && clnicNo !== ""){
-			$("#clnicNo").val(clnicNo);
-			$("#clnicNo").data("recall", "Y");
-		}else{
-		}
-		// 진료 시간에 값 넣기
-		if(clnicTime != null && clnicTime != ""){
-			var clnicStartTimeFormat = moment(clnicTime).format('YYYY년 MM월 DD일 HH:mm');
-			$("#clnicTimeInput").val(clnicStartTimeFormat);
-		}
-		// 발병일에 값 넣기
-		if(atfssDt != null && atfssDt != ""){
-			$("#atfssDt").val(atfssDt);
-		}
-		// 진단 내역에 값 넣기
-		if(clnicCn != null && clnicCn != ""){
-			$("#clnicCn").val(clnicCn);
-		}
-		
-		// 검사는 결과테이블에 값 넣기 때문에 여기서 안 씀
-		
-		// 상병 테이블에 값 세팅
-		if(kcd.length > 0){
-			for(var i = 0; i < kcd.length; i++){
-				selectSAWLAjax(kcd[i], sckwndKr[i], sckwndEn[i], msick[i], sckwndSe[i]);		
-			}
-		}
-		
-		// 치료 테이블에 값 세팅
-		if(mdlrtCd.length > 0){
-			for(var i = 0; i < mdlrtCd.length; i++){
-				selectMTAjax(mdlrtCd[i], mdlrtNm[i], mllwncAt[i], mdlrtAmount[i], mdlrtCl[i]);
-			}
-		}
-		// 처방 테이블에 값 세팅
-		if(medcinCd.length > 0){
-			for(var i = 0; i < medcinCd.length; i++){
-				selectMAjax(medcinCd[i], prscrptnNm[i], medcinMfbiz[i], mdctnCoursUsage[i], mdctnUnit[i], medcinPc[i], medcinStandard[i]);
-				if(mdctnCpcty[i] != null && mdctnCpcty[i] != "" && mdctnCpcty[i] > 0){
-					$(".mdctnCpctyInput:eq('"+i+"')").val(mdctnCpcty[i]);
-				}
-				if(mdctnCo[i] != null && mdctnCo[i] != "" && mdctnCo[i] > 0){
-					$(".mdctnCoInput:eq('"+i+"')").val(mdctnCo[i]);
-				}
-				if(mdctnPd[i] != null && mdctnPd[i] != "" && mdctnPd[i] > 0){
-					$(".mdctnPdInput:eq('"+i+"')").val(mdctnPd[i]);
-				}
-			}
-		}
-		
-	}
-///////////////////////////검사완료 호출 끝///////////////////////////		
-
-		// 검사완료 호출일 때 사용(pastClinic 안에서 사용)
-		//검사완료 환자를 호출할 경우 테이블에 다시 값을 넣어줘야 하는데 오더 테이블만으로는 역부족...
-		function selectPastTable(clnicTime, clnicNo, empNm, atfssDt, clnicCn, clnicMemo,
-				sckwndSe, kcd, sckwndKr, sckwndEn){
-			sawObj = {
-				"sckwndSeList" : sckwndSe,
-				"kcdList" : kcd,
-				"sckwndKrList" : sckwndKr,
-				"sckwndEnList" : sckwndEn
-			}
-			
-			clinicVO = {
-				"clnicNo" : clnicNo,
-				"sickAndWoundedVO" : sawObj
-			}
-			
-			
-			$.ajax({
-				type : "post",
-				url  : "/mediform/doctor/clinic/select/pastTable",
-				data : JSON.stringify(clinicVO),
-				contentType : "application/json; charset=utf-8",
-				beforeSend : function(xhr){
-				//ajax호출 중 처리
-				//글로벌 변수로 설정한 csrf token 셋팅
-				xhr.setRequestHeader(header,token);
-				},
-				success : function(res){
-					
-					// 상병
-					var msick = [];
-					var msickArr = res.sickAndWoundedVO.msick;
-						$(msickArr).each(function(i, item){
-							if(msickArr.length > 0){
-								msick.push(item);
-							}
-						});
-					// 치료
-					var mdlrtNm = [];
-					var mllwncAt = [];
-					var mdlrtAmount = [];
-					var mdlrtCl = [];
-					var mdlrtCd = [];
-					$(res.selectMedicalTreatmentRecordVOList).each(function(){
-						if(this.mdlrtNm != null && this.mdlrtNm != ""){
-							mdlrtCd.push(this.mdlrtCd);
-							mdlrtNm.push(this.mdlrtNm);
-							mllwncAt.push(this.mllwncAt);
-							mdlrtAmount.push(this.mdlrtAmount);
-							mdlrtCl.push(this.mdlrtCl);
-							
-						}
-					});
-					
-					//처방
-					var medcinCd = [];
-					var prscrptnNm = [];
-					var medcinMfbiz = [];
-					var mdctnCoursUsage = [];
-					var mdctnCpcty = [];
-					var mdctnUnit = [];
-					var mdctnCo = [];
-					var mdctnPd = [];
-					var medcinPc = [];
-					var medcinStandard = [];
-					$(res.prescriptionOrderVOList).each(function(){
-						if(this.medcinMfbiz != null && this.medcinMfbiz != ""){
-							medcinCd.push(this.medcinCd);
-							prscrptnNm.push(this.prscrptnNm);
-							medcinMfbiz.push(this.medcinMfbiz);
-							mdctnCoursUsage.push(this.mdctnCoursUsage);
-							mdctnCpcty.push(this.mdctnCpcty);
-							mdctnUnit.push(this.mdctnUnit);
-							mdctnCo.push(this.mdctnCo);
-							mdctnPd.push(this.mdctnPd);
-							medcinPc.push(this.medcinPc);
-							medcinStandard.push(this.medcinStandard);
-						}						
-						
-					});
-					
-					clinicRecall(clnicTime, clnicNo, empNm, atfssDt, clnicCn, clnicMemo,
-							sckwndSe, kcd, sckwndKr, sckwndEn, msick,
-							mdlrtCd, mdlrtNm, mllwncAt, mdlrtAmount, mdlrtCl,
-							medcinCd, prscrptnNm, medcinMfbiz, mdctnCoursUsage, mdctnCpcty, mdctnUnit, mdctnCo, mdctnPd, medcinPc, medcinStandard);
-				// clinicRecall 불러서 값 넣어주기(아니면 여기서 바로 테이블에 값 넣어줘도 될듯???)
-				},
-					error : function(err){
-				}
-			});
-	}
 	
-	
-	// 진료 날짜 선택시 진료 상세에 값 넣기
-	function pastClinicData(clnicTime, clnicNo, empNm, atfssDt, clnicCn, sckwndSe, kcd, sckwndKr, 
-							mdlrtCd, mdlrtNm, mdlrtCurer, hlthchkpCd, hlthchkpNm, hlthchkpResult, medcinCd,
-							prscrptnNm, mdctnCpcty, mdctnUnit, mdctnCo, mdctnPd, mdctnCoursUsage, clnicMemo){
-		// 진료 시간
-		
-		var clnicTimeFormat = "";
-		if(clnicTime == null || clnicTime == ""){
-			clnicTimeFormat = "진료 시간이 없습니다.";
-      	}else{
-      		var date = new Date(clnicTime);
-      		var day = formatDate3(date);
-      		var time = formatTime(date);
-      		clnicTimeFormat = day + " " + time;
-      	}
-      	$("#pastClnicTime").text(clnicTimeFormat);
-      	// 진료 번호
-      	$("#pastClnicNo").text(clnicNo);
-      	// 담당의
-      	$("#pastEmpNm").text(empNm);
-      	// 발병일
-		if(atfssDt !== null && atfssDt !== "" && atfssDt !== undefined){
-			var date = new Date(atfssDt);
-			var atfssDate = formatDate3(date);
-			$("#pastAtfssDt").text(atfssDate);
-		}
-      	// 진단내역
-      	var cliniCnCard = "";
-      	if(clnicCn == null || clnicCn == ""){
-      		clnicCn = "-"
-      	}
-      	cliniCnCard += "<div class='card p-2 m-1'>";
-      	cliniCnCard += clnicCn + "</div>";
-      	$("#pastClnicCn").html(cliniCnCard);
-      	// 상병
-      	var sawHtml = "";
-      	if(sckwndSe[0] === null || sckwndSe[0] === "" || 1 > sckwndSe.length){
-      		sawHtml = "-";
-      	}else{
-	      	for(var i = 0; i < sckwndSe.length; i++){
-	      		var sckwndSeKo = "";
-	      		if(sckwndSe[i] == '1'){
-	      			sckwndSeKo = "주";
-	      		}else if(sckwndSe[i] == '2'){
-	      			sckwndSeKo = "부";
-	      		}else if(sckwndSe[i] == '3'){
-	      			sckwndSeKo = "배제";
-	      		}
-	      		
-	      		sawHtml += "<div class='card p-2 m-1'>";
-	      		sawHtml += sckwndSeKo + " | " + kcd[i] + " | " + sckwndKr[i] + "</div>";
-	      	}
-      	}
-      	$("#pastSAW").html(sawHtml);
-      	// 치료
-      	var mtrHtml = "";
-      	if(mdlrtCd[0] === null || mdlrtCd[0] === "" || mdlrtCd.length === 0){
-      		mtrHtml = "-";
-      	}else{
-	      	for(var i = 0; i < mdlrtCd.length; i++){
-	      		var curer = "";
-	      		if(mdlrtCurer[i] === null || mdlrtCurer[i] === ""){
-	      			curer = '<span class="badge badge rounded-pill d-block p-1 badge-subtle-warning">치료사 미배정<span class="fas fa-ban" data-fa-transform="shrink-2"></span></span>'
-	      		}else{
-	      			curer = '<span class="badge badge rounded-pill d-block p-1 badge-subtle-success">완료<span class="fas fa-check" data-fa-transform="shrink-2"></span></span>'
-	      		}
-	      		mtrHtml += "<div class='card ps-0 py-1 m-1'>";
-	      		mtrHtml += "<div class='row ps-2'>";
-	      		mtrHtml += "<div class='col-auto pe-0' style='display: flex; align-items: center;'>";
-	      		mtrHtml += mdlrtCd[i] + " | " + mdlrtNm[i] + " | </div><div class='col-auto m-1 ps-0'>" + curer + "</div></div></div>";
-	      	}
-      	}
-      	$("#pastMTR").html(mtrHtml);
-      	// 검사
-      	
-      	var meoHtml = "";
-      	if(hlthchkpCd[0] === null || hlthchkpCd[0] === "" || hlthchkpCd.length === 0){
-      		meoHtml = "-";
-      	}else{
-	      	for(var i = 0; i < hlthchkpCd.length; i++){
-	      		var result = "";
-	      		if(hlthchkpResult[i] === null || hlthchkpResult[i] === "" || hlthchkpResult[i] === undefined || hlthchkpResult[i] == "null"){
-	      			result = '<span class="badge badge rounded-pill d-block p-1 badge-subtle-warning">검사 미완료<span class="bi-x-circle-fill"></span></span>'
-	      		}else if(hlthchkpCd[i] === "HC003"){
-	      			
-	      			result = "<a class='xrayATag' data-hlthchkpresult='" + hlthchkpResult[i] + "' data-clnicno='"+clnicNo+"' href='#'>결과보기</a></br>"
-
-	      			result = "<span class='badge badge rounded-pill d-block p-1 badge-subtle-success'><a class='xrayATag' data-hlthchkpresult='" + hlthchkpResult[i] + "' href='#'>결과보기<span class='ms-1 fas fa-check' data-fa-transform='shrink-2'></span></a></span>"
-
-	      		}else {
-	      			result =  hlthchkpResult[i];
-	      		}
-	      		meoHtml += "<div class='card ps-0 py-1 m-1'>";
-	      		meoHtml += "<div class='row ps-2'>";
-	      		meoHtml += "<div class='col-auto pe-0' style='display: flex; align-items: center;'>";
-	      		meoHtml += hlthchkpCd[i] + " | " + hlthchkpNm[i] + " | </div><div class='col-auto m-1 ps-0'>" + result + "</div></div></div>";
-	      	}
-      	}
-      	$("#pastMEO").html(meoHtml);
-      	// 처방
-      	var poHtml = "";
-      	if(medcinCd[0] === null || medcinCd[0] === "" || medcinCd.length === 0){
-      		poHtml = "-";
-      	}else{
-	      	for(var i = 0; i < medcinCd.length; i++){
-	      		var dateFormat = "";
-	      		if(parseInt(mdctnPd[i]) == 0){
-	      			dateFormat = "";
-	      		}else{
-	      			dateFormat = convertDays(parseInt(mdctnPd[i]));
-	      		}
-	      		poHtml += "<div class='card p-2 m-1'>";
-	      		poHtml += medcinCd[i] + " | " + prscrptnNm[i] + " | 투여량 : " + mdctnCpcty[i] + mdctnUnit[i] + " | " + mdctnCo[i] + "회 | " + dateFormat + " | " + mdctnCoursUsage + "</div>";
-	      	}
-      	}
-      	$("#pastPO").html(poHtml);
-      	
-      	var clinicMemo1 = "";
-      	if(clnicMemo == null || clnicMemo == ""){
-      		clinicMemo1 = "-"; 
-      	}else{
-	      	clinicMemo1 = "<div class='card p-2 m-1'>";
-	      	clinicMemo2 += clnicMemo + "</div>";
-      	}
-      	$("#pastMemo").html(clinicMemo1);
-	}
-	
-	// 진료 날짜 선택시 이벤트 (전처방 ajax 실행)
-	// (pastClinic 호출)
-	$(document).on("click", ".allClnicTime", function(){
-		var clnicNo = $(this).data("clnicno");
-		// 검사완료 호출인지 판단하기 위해 쓰는 변수(전처방 ajax에서 어디로 보낼지 선택한다.)
-		var recall = false;
-		// 전처방 ajax(진료 번호, 검사완료여부(true || false))
-		pastClinic(clnicNo, recall);
-		
-	});
-	
-	// 진료기록 ajax(진료 번호, 검사완료여부(true || false))
-	// (검사완료일 경우 clinicRecall 호출 / 진료대기 호출일 경우 pastClinicData 호출)
-	function pastClinic(clnicNo, recall){
-		
-		var clnicObj = {
-			"clnicNo" : clnicNo
-		}
-		
-		$.ajax({
-			type : "post",
-			url  : "/mediform/doctor/clinic/select",
-			data : JSON.stringify(clnicObj),
-			contentType : "application/json; charset=utf-8",
-	        beforeSend : function(xhr){
-	            //ajax호출 중 처리
-	            //글로벌 변수로 설정한 csrf token 셋팅
-	            xhr.setRequestHeader(header,token);
-	        },
-			success : function(res){
-				var sckwndSe = [];
-				var kcd = [];
-				var sckwndKr = [];
-				var sckwndEn = [];
-				var mdlrtCd = [];
-				var mdlrtNm = [];
-				var mdlrtCurer = [];
-				var hlthchkpCd = [];
-				var hlthchkpNm = [];
-				var hlthchkpResult = [];
-				var medcinCd = [];
-				var prscrptnNm = [];
-				var mdctnCpcty = [];
-				var mdctnUnit = [];
-				var mdctnCo = [];
-				var mdctnPd = [];
-				var mdctnCoursUsage = [];
-				
-				$(res.sickAndWoundedVOList).each(function(sawI, sawItem){
-					if(sawItem.sckwndSe != null && sawItem.sckwndSe != "" && sawItem.sckwndSe == 1){
-						sckwndSe.push(sawItem.sckwndSe);
-						kcd.push(sawItem.kcd);
-						sckwndKr.push(sawItem.sckwndKr);
-						sckwndEn.push(sawItem.sckwndEn);
-					}else if(sawItem.sckwndSe != null && sawItem.sckwndSe!= "" && sawItem.sckwndSe == 2){
-						sckwndSe.push(sawItem.sckwndSe);
-						kcd.push(sawItem.kcd);
-						sckwndKr.push(sawItem.sckwndKr);
-						sckwndEn.push(sawItem.sckwndEn);
-					}else if(sawItem.sckwndSe != null && sawItem.sckwndSe!= "" && sawItem.sckwndSe == 3){
-						sckwndSe.push(sawItem.sckwndSe);
-						kcd.push(sawItem.kcd);
-						sckwndKr.push(sawItem.sckwndKr);
-						sckwndEn.push(sawItem.sckwndEn);
-					}
-				});
-				$(res.selectMedicalTreatmentRecordVOList).each(function(mtrI, mtrItem){
-					var curer = "";
-					if(this.mdlrtCd !== null && this.mdlrtCd !== ""){
-						mdlrtCd.push(this.mdlrtCd);
-						mdlrtNm.push(this.mdlrtNm);
-						if(this.mdlrtCurer === null || this.mdlrtCurer === ""){
-							curer = "배정된 치료사가 없습니다."
-						}else{
-							curer = this.mdlrtCurer;
-						}
-						mdlrtCurer.push(curer);
-					}
-				});
-				// 엑스레이에 보낼 mecCd만 골라내기
-				var xrayMecCdResult = [];
-				$(res.medicalExaminationOrderVOList).each(function(meoI, meoItem){
-					if(this.hlthchkpCd != null && this.hlthchkpCd !=""){
-						hlthchkpCd.push(this.hlthchkpCd);
-						hlthchkpNm.push(this.hlthchkpNm);
-						if(this.hlthchkpCd === "HC003" && (this.hlthchkpResult == null || this.hlthchkpResult == "")){
-							hlthchkpResult.push(this.mecCd);
-							xrayMecCdResult.push(this.mecCd);
-						}else if(this.hlthchkpCd != "HC003" && this.hlthchkpResult == null || this.hlthchkpResult == ""){
-							hlthchkpResult.push('null');
-						}else{
-							hlthchkpResult.push(this.hlthchkpResult);
-						}
-					}
-				});
-				$(res.prescriptionOrderVOList).each(function(poI, poItem){
-					if(this.prscrptnCd != null && this.prscrptnCd != ""){
-						medcinCd.push(this.medcinCd);
-						prscrptnNm.push(this.prscrptnNm);
-						mdctnCpcty.push(this.mdctnCpcty);
-						mdctnUnit.push(this.mdctnUnit);
-						mdctnCo.push(this.mdctnCo);
-						mdctnPd.push(this.mdctnPd);
-						mdctnCoursUsage.push(this.mdctnCoursUsage);
-						
-					}
-				});
-				
-				if(recall){
-					// 검사완료 호출일 때 사용
-					selectPastTable(res.clnicTime, clnicNo, res.empNm, res.atfssDt, res.clnicCn, res.clnicMemo, sckwndSe, kcd, sckwndKr, sckwndEn);
-					
-					// x-ray에 보낼것(mecCd 배열)
-					if(xrayMecCdResult.length > 0){
-						
-						selectXrayResult(clnicNo, 'Y');
-					}
-				}else{
-					// 진료대기 호출일 때 사용
-					pastClinicData(res.clnicTime, clnicNo, res.empNm, res.atfssDt, 
-								res.clnicCn, sckwndSe, kcd, sckwndKr, mdlrtCd, mdlrtNm, mdlrtCurer,
-								hlthchkpCd, hlthchkpNm, hlthchkpResult, medcinCd, prscrptnNm, mdctnCpcty, mdctnUnit,
-								mdctnCo, mdctnPd, mdctnCoursUsage, res.clnicMemo);
-					
-				}
-			},
-			error : function(err){
-			}
-		});
-	}
-	
-	// 선택된 환자 진료일 가져오기(patntNo 사용)(검사완료 후 호출일 경우 clinicRecall 호출)
-	function selectClnicTime(patntNo){
-		
-		var patntObj = {
-			"patntNo" : patntNo
-		}
-		
-		$.ajax({
-			type : "post",
-			url  : "/mediform/doctor/clinic/select/time",
-			data : JSON.stringify(patntObj),
-			contentType : "application/json; charset=utf-8",
-	        beforeSend : function(xhr){
-	            //ajax호출 중 처리
-	            //글로벌 변수로 설정한 csrf token 셋팅
-	            xhr.setRequestHeader(header,token);
-	        },
-			success : function(res){
-				var flag = false;
-				var clnicTimesHtml = "";
-				$(res).each(function(i, item){
-					var clnicTimeFormat = this.clnicTime.split(" ")[0].split("-");
-					var year = clnicTimeFormat[0].substring(2,4);
-					var clnicTime = year + "." + clnicTimeFormat[1] + "." +clnicTimeFormat[2] ;
-					if(this.clnicAt === "Y"){
-						clnicTimesHtml += "<tr><td><button id='allClnicTime"+i+"' class='btn btn-sm btn-falcon-default allClnicTime' type='button' data-clnicno='"+this.clnicNo+"' >" + clnicTime + "</button></td></tr>";
-						if(flag === false){
-							pastClinic(this.clnicNo, false);
-							flag = true;
-						}
-						
-					}else if(this.clnicAt === "N"){
-						// 검사 완료 재호출 부분임 진료작성 부분에 있는 기록 가져오는 함수 실행 해야함
-						pastClinic(this.clnicNo, true);
-					}
-				});
-				$("#allClnicTimeDt").html(clnicTimesHtml);
-			},
-			error : function(err){
-			}
-		});
-	}
-	
-	// 선택된 환자 바이탈 정보 가져와서 넣어주기(patntNo 사용)
-	function callBtnSelectPatientVital(patntNo){
-		
-		var patntObj = {
-				"patntNo" : patntNo
-		}			
-		$.ajax({
-			type : "post",
-			url  : "/mediform/doctor/vitals/select",
-			data : JSON.stringify(patntObj),
-			contentType : "application/json; charset=utf-8",
-	        beforeSend : function(xhr){
-	            //ajax호출 중 처리
-	            //글로벌 변수로 설정한 csrf token 셋팅
-	            xhr.setRequestHeader(header,token);
-	        },
-			success : function(res){
-				// 값이 없을 경우 - 넣어주기 
-				var hghrkHhprs = "";
-				var lwtrkHhprs = "";
-				var bdheat = "";
-				if(res.hghrkHhprs == null || res.hghrkHhprs == ""){
-					hghrkHhprs = "-";
-				}else{
-					hghrkHhprs = res.hghrkHhprs;
-				}
-				if(res.lwtrkHhprs == null || res.lwtrkHhprs == ""){
-					lwtrkHhprs = "-";
-				}else{
-					lwtrkHhprs = res.lwtrkHhprs;
-				}
-				if(res.bdheat == null || res.bdheat == ""){
-					bdheat = "-";
-				}else{
-					bdheat = res.bdheat;
-				}
-				$("#hghrkHhprsDt").text(hghrkHhprs);
-				$("#lwtrkHhprsDt").text(lwtrkHhprs);
-				$("#bdheatDt").text(bdheat);
-				
-			},
-			error : function(err){
-			}
-		});
-		
-	}
-	
-	// 환자정보 테이블에 값 넣기(patntNo 사용)(selectPatientAjax 사용)
-	function callBtnSelectPatient(patntNo){
-		var patntObj = {
-				"patntNo" : patntNo
-		}
-		
-		$.ajax({
-			type : "post",
-			url  : "/mediform/patient/info",
-			data : JSON.stringify(patntObj),
-			contentType : "application/json; charset=utf-8",
-		        beforeSend : function(xhr){
-		            //ajax호출 중 처리
-		            //글로벌 변수로 설정한 csrf token 셋팅
-		       		xhr.setRequestHeader(header,token);
-		        },
-			success : function(res){
-				var patientDropItemHtml = "";
-				patientTbodyHtml = "";
-				$(res).each(function(idx, item){
-					var patientBirth = birthFormat(this.patntRrno1, this.patntRrno2);
-					selectPatientAjax(this.patntNo, this.patntNm, this.patntAge, this.patntRrno1, this.patntRrno2, patientBirth,
-							this.patntSexdstn, this.patntTelno, this.patntHlthinsAt, this.patntHsptlzAt, this.prtctorNm, this.prtctorTelno, this.patntMemo,
-							this.patntHeight, this.patntBdwgh, this.patntBdp);
-				});
-			},
-			error : function(err){
-			}
-		});
-	}
 	// 환자 정보 부분 값 초기화
 	function cleanPatientInfo(){
 		// 환자 번호 값 초기화
@@ -2445,7 +2451,7 @@ $(function(){
 		selectClnicTime(patntNo);
 		
 		// 환자 검사 결과 조회
-		selectMEOResult(patntNo, rceptNo);
+		//selectMEOResult(patntNo, rceptNo);
 		
 		patientInput.blur();
 		$(patientDropMenu).hide();
@@ -2480,7 +2486,7 @@ $(function(){
 		
 	}
 	
-	// 환자 상세보기에 값 넣어주기
+	// 환자 상세보기에 값 넣어주기(3-1번)
 	function selectPatientAjax(patntNo, patntNm, patntAge, patntRrno1, patntRrno2, patientBirth,
 			patntSexdstn, patntTelno, patntHlthinsAt, patntHsptlzAt, prtctorNm, prtctorTelno, 
 			patntMemo, patntHeight, patntBdwgh, patntBdp){
