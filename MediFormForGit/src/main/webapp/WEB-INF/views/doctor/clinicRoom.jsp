@@ -2153,11 +2153,11 @@ $(function(){
 			url  : "/mediform/patient/info",
 			data : JSON.stringify(patntObj),
 			contentType : "application/json; charset=utf-8",
-	        beforeSend : function(xhr){
-	            //ajax호출 중 처리
-	            //글로벌 변수로 설정한 csrf token 셋팅
-	            xhr.setRequestHeader(header,token);
-	        },
+		        beforeSend : function(xhr){
+		            //ajax호출 중 처리
+		            //글로벌 변수로 설정한 csrf token 셋팅
+		       		xhr.setRequestHeader(header,token);
+		        },
 			success : function(res){
 				var patientDropItemHtml = "";
 				patientTbodyHtml = "";
@@ -2195,13 +2195,13 @@ $(function(){
 		// 환자 보호자 연락처 값 초기화
 		$("#prtctorTelnoDt").val(""); 
 		// 환자 메모 값 초기화
-      	$("#patntMemoDt").val("");
+      		$("#patntMemoDt").val("");
 		// 환자 키 값 초기화
-      	$("#patntHeightDt").text("");
+      		$("#patntHeightDt").text("");
 		// 환자 몸무게 값 초기화
-      	$("#patntBdwghDt").text("");
+      		$("#patntBdwghDt").text("");
 		// 환자 혈액형 값 초기화
-      	$("#patntBdpDt").text("");
+      		$("#patntBdpDt").text("");
 		// 최고혈압 값 초기화
 		$("#hghrkHhprsDt").text("");
 		// 최저혈압 값 초기화
@@ -2209,27 +2209,27 @@ $(function(){
 		// 체온 값 초기화
 		$("#bdheatDt").text("");
 		// 진료일 값 초기화
-      	$("#allClnicTimeDt tr").remove();
+      		$("#allClnicTimeDt tr").remove();
 		// 진료 시간 값 초기화
-      	$("#pastClnicTime").text("");
-     	// 진료 번호 값 초기화
-      	$("#pastClnicNo").text("");
-      	// 담당의 값 초기화
-      	$("#pastEmpNm").text("");
-      	// 발병일 값 초기화
-      	$("#pastAtfssDt").text("");
-      	// 진단내역 값 초기화
-      	$("#pastClnicCn").text("");
-      	// 상병 값 초기화
-      	$("#pastSAW").text("");
-      	// 검사 값 초기화
-      	$("#pastMEO").text("");
-      	// 치료 값 초기화
-      	$("#pastMTR").text("");
-      	// 처방 값 초기화
-      	$("#pastPO").text("");
-      	// 메모 값 초기화
-      	$("#pastMemo").text("");
+	      	$("#pastClnicTime").text("");
+	     	// 진료 번호 값 초기화
+	      	$("#pastClnicNo").text("");
+	      	// 담당의 값 초기화
+	      	$("#pastEmpNm").text("");
+	      	// 발병일 값 초기화
+	      	$("#pastAtfssDt").text("");
+	      	// 진단내역 값 초기화
+	      	$("#pastClnicCn").text("");
+	      	// 상병 값 초기화
+	      	$("#pastSAW").text("");
+	      	// 검사 값 초기화
+	      	$("#pastMEO").text("");
+	      	// 치료 값 초기화
+	      	$("#pastMTR").text("");
+	      	// 처방 값 초기화
+	      	$("#pastPO").text("");
+	      	// 메모 값 초기화
+	      	$("#pastMemo").text("");
 	}
 	
 	// 진료 등록 부분 값 초기화
